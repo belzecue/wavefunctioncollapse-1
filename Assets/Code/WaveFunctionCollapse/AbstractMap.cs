@@ -34,11 +34,7 @@ public abstract class AbstractMap {
 		this.backtrackBarrier = 0;
 	}
 
-	public abstract Slot GetSlot(Vector3Int position, bool create);
-	
-	public Slot GetSlot(Vector3Int position) {
-		return this.GetSlot(position, true);
-	}
+	public abstract Slot GetSlot(Vector3Int position);
 
 	public abstract IEnumerable<Slot> GetAllSlots();
 
@@ -55,7 +51,7 @@ public abstract class AbstractMap {
 		if (this.workArea != null) {
 			this.workArea.Add(slot);
 		}
-	}	
+	}
 	
 	public void FinishRemovalQueue() {
 		while (this.RemovalQueue.Any()) {
@@ -83,7 +79,6 @@ public abstract class AbstractMap {
 #if UNITY_EDITOR
 		try {
 #endif
-			Slot.ResetIterationCount();
 			this.RemovalQueue.Clear();
 			this.workArea = new HashSet<Slot>(targets.Select(target => this.GetSlot(target)).Where(slot => slot != null && !slot.Collapsed));
 
@@ -129,7 +124,7 @@ public abstract class AbstractMap {
 			if (showProgress) {
 				EditorUtility.ClearProgressBar();
 			}
-			Debug.Log("Collapsed " + targets.Count() + " slots in " + Slot.GetIterationCount() + " iterations (" + (float)Slot.GetIterationCount() / targets.Count() + " iterations per slot)");
+			Debug.Log("Collapsed " + targets.Count() + " slots.");
 		}
 		catch (Exception e) {
 			if (showProgress) {

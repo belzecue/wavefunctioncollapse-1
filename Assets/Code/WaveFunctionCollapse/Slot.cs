@@ -93,15 +93,8 @@ public class Slot {
 		this.Collapse(this.Modules.First());
 	}
 
-	private static int iterationCount = 0;
-
-
 	// This modifies the supplied ModuleSet as a side effect
 	public void RemoveModules(ModuleSet modulesToRemove, bool recursive = true) {
-#if UNITY_EDITOR
-		Slot.iterationCount++;
-#endif
-
 		modulesToRemove.Intersect(this.Modules);
 
 		if (this.map.History != null && this.map.History.Any()) {
@@ -116,6 +109,11 @@ public class Slot {
 			int inverseDirection = (d + 3) % 6;
 			var neighbor = this.GetNeighbor(d);
 			if (neighbor == null || neighbor.Forgotten) {
+#if UNITY_EDITOR
+				if (this.map is InfiniteMap && (this.map as InfiniteMap).IsOutsideOfRangeLimit(this.Position + Orientations.Direction[d])) {
+					(this.map as InfiniteMap).OnHitRangeLimit(this.Position + Orientations.Direction[d], modulesToRemove);
+				}
+#endif
 				continue;
 			}
 
@@ -144,14 +142,6 @@ public class Slot {
 		if (recursive) {
 			this.map.FinishRemovalQueue();
 		}
-	}
-
-	public static void ResetIterationCount() {
-		iterationCount = 0;
-	}
-
-	public static int GetIterationCount() {
-		return iterationCount;
 	}
 
 	/// <summary>

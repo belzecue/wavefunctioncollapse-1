@@ -43,6 +43,7 @@ public class ModuleData : ScriptableObject, ISerializationCallbackReceiver {
 		Debug.Log("Removed " + count + " impossible neighbors.");
 		EditorUtility.ClearProgressBar();
 		EditorUtility.SetDirty(this);
+		AssetDatabase.SaveAssets();
 	}
 
 
@@ -106,6 +107,7 @@ public class ModuleData : ScriptableObject, ISerializationCallbackReceiver {
 
 		this.Modules = modules.ToArray();
 		EditorUtility.SetDirty(this);
+		AssetDatabase.SaveAssets();
 	}
 #endif
 
@@ -118,5 +120,15 @@ public class ModuleData : ScriptableObject, ISerializationCallbackReceiver {
 		foreach (var module in this.Modules) {
 			module.PossibleNeighborsArray = module.PossibleNeighbors.Select(ms => ms.ToArray()).ToArray();
 		}
+	}
+
+	public void SavePrototypes() {
+#if UNITY_EDITOR
+		EditorUtility.SetDirty(this.Prototypes);
+		AssetDatabase.SaveAssets();
+		foreach (var module in this.Modules) {
+			module.Prototype = module.Prefab.GetComponent<ModulePrototype>();
+		}
+#endif
 	}
 }
